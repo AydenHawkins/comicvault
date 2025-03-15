@@ -22,13 +22,11 @@ class ComicCard extends StatelessWidget {
           children: [
             Spacer(flex: 6),
             SizedBox(
-              width: imageWidth * 0.75,
+              width: imageWidth,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.network(
                   "https://th.bing.com/th/id/OIP.9sOrE4Gvy0gLl8i7jjp-9gHaLY?w=200&h=307&c=7&r=0&o=5&pid=1.7",
-                  width: imageWidth,
-                  height: imageHeight,
                   fit: BoxFit.fill,
                 ),
               ),
@@ -63,40 +61,63 @@ class SearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController myController = TextEditingController();
+
+    void printStoredText() {
+      String storedText = myController.text;
+      print("User Input: $storedText");
+    }
+
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * 0.1,
+      height: MediaQuery.of(context).size.height * 0.11,
       color: const Color.fromARGB(255, 171, 171, 171),
-      child: Center(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.4,
-            height: MediaQuery.of(context).size.height * 0.1 * 0.5,
-            color: const Color.fromARGB(255, 110, 110, 110),
-            child: TextFormField(
-              style: TextStyle(color: Colors.white),
-              controller: TextEditingController(),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: const Color.fromARGB(255, 75, 75, 75),
+      child: Column(
+        children: [
+          Spacer(flex: 5),
+          Row(
+            children: [
+              Spacer(),
+              Icon(Icons.search, color: Colors.white, size: 30),
+              Spacer(),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  height: MediaQuery.of(context).size.height * 0.1 * 0.5,
+                  color: const Color.fromARGB(255, 110, 110, 110),
+                  child: TextFormField(
+                    style: TextStyle(color: Colors.white),
+                    controller: myController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: const Color.fromARGB(255, 75, 75, 75),
+                        ),
+                      ),
+                      labelText: "Search Comics",
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      labelStyle: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(125, 255, 255, 255),
+                        fontFamily: "ComicNeue",
+                      ),
+                    ),
                   ),
                 ),
-                labelText: "Search Comics",
-                floatingLabelBehavior: FloatingLabelBehavior.never,
-                labelStyle: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(125, 255, 255, 255),
-                  fontFamily: "ComicNeue",
-                ),
               ),
-            ),
+              Spacer(flex: 12),
+              ElevatedButton(
+                onPressed: printStoredText,
+                child: Text("print input"),
+              ),
+            ],
           ),
-        ),
+          Spacer(),
+        ],
       ),
     );
   }
@@ -117,7 +138,7 @@ class SearchScreen extends StatelessWidget {
               itemCount: 12,
               padding: EdgeInsets.all(25),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
+                crossAxisCount: 2,
                 mainAxisSpacing: 8,
                 crossAxisSpacing: 8,
                 childAspectRatio: 0.6,
