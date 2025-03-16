@@ -123,6 +123,7 @@ class SearchBar extends StatelessWidget {
   }
 }
 
+//TODO: Make this gridview builder more similar to the one in collection screen
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
 
