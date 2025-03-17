@@ -1,8 +1,9 @@
-import 'package:comicvault/search_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:comicvault/search_screen.dart';
+import 'package:comicvault/screens/search_screen_v2.dart';
 
 void main() {
-  runApp(const MaterialApp(title: "Testing", home: SearchScreen()));
+  runApp(const MaterialApp(title: "Testing", home: SearchScreenv2()));
 }
 
 class MainApp extends StatelessWidget {
