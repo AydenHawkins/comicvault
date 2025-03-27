@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "135569472897",
+    "project_id": "comicvault-78eb8",
+    "storage_bucket": "comicvault-78eb8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135569472897:android:b1c40c05de668302443c80",
+        "android_client_info": {
+          "package_name": "com.example.comicvault"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYY1tUdPQkN7zCI4uG27XXXfZds8lOv0k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
