@@ -1,9 +1,12 @@
 import 'package:comicvault/collection_screen.dart';
 //import 'package:comicvault/search_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
   runApp(const MaterialApp(title: "Testing", home: CollectionScreen()));
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
 
 class MainApp extends StatelessWidget {
