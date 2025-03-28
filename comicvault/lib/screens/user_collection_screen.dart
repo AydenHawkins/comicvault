@@ -11,10 +11,14 @@ class UserCollectionScreen extends StatefulWidget {
 }
 
 class SearchScreenState extends State<UserCollectionScreen> {
-  
   String _selectedCategory = 'issue';
   final TextEditingController _seriesController = TextEditingController();
   final TextEditingController _issueController = TextEditingController();
+
+  // These will be used once the screen is able to query the user's collection from the firestore
+  bool _isLoading = false;
+  String _errorMessage = '';
+  final List<dynamic> _searchResults = [];
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +72,24 @@ class SearchScreenState extends State<UserCollectionScreen> {
             ),
 
             SizedBox(height: 16),
+            Expanded(
+              child:
+                  _searchResults.isEmpty && !_isLoading
+                      ? Center(child: Text('No comics in collection yet'))
+                      : GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio: 0.6,
+                        ),
+                        itemCount: _searchResults.length,
+                        itemBuilder: (context, index) {
+                          final comic = _searchResults[index];
+                          return ComicCardV2(comic: comic);
+                        },
+                      ),
+            ),
           ],
         ),
       ),
