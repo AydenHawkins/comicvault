@@ -29,7 +29,7 @@ class _StartScreenState extends State<StartScreen> {
     if (!firebaseReady) return const Center(child: CircularProgressIndicator());
 
     User? user = FirebaseAuth.instance.currentUser;
-    //if (user != null) return const SearchScreenv2();
+    if (user != null) return const SearchScreenv2();
     return const LoginScreen();
   }
 }
@@ -117,7 +117,6 @@ class _LoginScreenState extends State<LoginScreen> {
         email: email!,
         password: password!,
       );
-      print("Logged in ${credential.user}");
       error = null; // clear the error message if exists.
       setState(() {}); // Trigger a rebuild
 
@@ -221,8 +220,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   "Error: $error",
                   style: TextStyle(color: Colors.red[800], fontSize: 12),
                 ),
-              if (isLoading) CircularProgressIndicator(),
-              if (loadingMessage.isNotEmpty)
+              if (isLoading && error == null)
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: CircularProgressIndicator(),
+                ),
+              if (loadingMessage.isNotEmpty && error == null)
                 Padding(
                   padding: const EdgeInsets.all(8),
                   child: Text(loadingMessage, textAlign: TextAlign.center),
@@ -294,14 +297,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
           timer.cancel();
           setState(() {
             isLoading = false;
-            loadingMessage = 'Email verified! Redirecting to get 2FA...';
+            loadingMessage = 'Email verified! Redirecting...';
           });
           Future.delayed(Duration(seconds: 2), () {
             if (!mounted) return;
             Navigator.of(context).pop();
-            Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (context) => const MultiAuth()));
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const SearchScreenv2()),
+            );
           });
         }
       }
@@ -309,149 +312,151 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 }
 
-class MultiAuth extends StatefulWidget {
-  const MultiAuth({super.key});
+//BELOW IS SMS AUTHENTICATION I'LL JUST KEEP IT HERE MAYBE WOULD BE USEFUL SOMEDAY
 
-  @override
-  State<MultiAuth> createState() => _MultiAuthState();
-}
+// class MultiAuth extends StatefulWidget {
+//   const MultiAuth({super.key});
 
-class _MultiAuthState extends State<MultiAuth> {
-  String? phoneNum;
-  String? error;
-  final _formKey = GlobalKey<FormState>();
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Enter your phone number.',
-                ),
-                maxLength: 64,
-                onChanged: (value) => phoneNum = value,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null; // Returning null means "no issues"
-                },
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                child: const Text('Get SMS'),
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    User? user = FirebaseAuth.instance.currentUser;
-                    if (user != null) {
-                      final multiFactorSession =
-                          await user.multiFactor.getSession();
-                      print(multiFactorSession);
-                      await FirebaseAuth.instance.verifyPhoneNumber(
-                        multiFactorSession: multiFactorSession,
-                        phoneNumber: phoneNum,
-                        verificationCompleted: (_) {},
-                        verificationFailed: (_) {},
-                        codeSent: (
-                          String verificationId,
-                          int? resendToken,
-                        ) async {
-                          // The SMS verification code has been sent to the provided phone number.
-                          // ...
-                          String? smsCode = null;
-                          try {
-                            smsCode = await getSmsCodeFromUser(context);
-                          } catch (e) {
-                            print(e);
-                          }
+//   @override
+//   State<MultiAuth> createState() => _MultiAuthState();
+// }
 
-                          print(smsCode);
+// class _MultiAuthState extends State<MultiAuth> {
+//   String? phoneNum;
+//   String? error;
+//   final _formKey = GlobalKey<FormState>();
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Padding(
+//         padding: const EdgeInsets.all(16),
+//         child: Form(
+//           key: _formKey,
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               TextFormField(
+//                 decoration: const InputDecoration(
+//                   hintText: 'Enter your phone number.',
+//                 ),
+//                 maxLength: 64,
+//                 onChanged: (value) => phoneNum = value,
+//                 validator: (value) {
+//                   if (value == null || value.isEmpty) {
+//                     return 'Please enter some text';
+//                   }
+//                   return null; // Returning null means "no issues"
+//                 },
+//               ),
+//               const SizedBox(height: 16),
+//               ElevatedButton(
+//                 child: const Text('Get SMS'),
+//                 onPressed: () async {
+//                   if (_formKey.currentState!.validate()) {
+//                     User? user = FirebaseAuth.instance.currentUser;
+//                     if (user != null) {
+//                       final multiFactorSession =
+//                           await user.multiFactor.getSession();
+//                       print(multiFactorSession);
+//                       await FirebaseAuth.instance.verifyPhoneNumber(
+//                         multiFactorSession: multiFactorSession,
+//                         phoneNumber: phoneNum,
+//                         verificationCompleted: (_) {},
+//                         verificationFailed: (_) {},
+//                         codeSent: (
+//                           String verificationId,
+//                           int? resendToken,
+//                         ) async {
+//                           // The SMS verification code has been sent to the provided phone number.
+//                           // ...
+//                           String? smsCode = null;
+//                           try {
+//                             smsCode = await getSmsCodeFromUser(context);
+//                           } catch (e) {
+//                             print(e);
+//                           }
 
-                          if (smsCode != null) {
-                            // Create a PhoneAuthCredential with the code
-                            final credential = PhoneAuthProvider.credential(
-                              verificationId: verificationId,
-                              smsCode: smsCode,
-                            );
+//                           print(smsCode);
 
-                            print(credential);
+//                           if (smsCode != null) {
+//                             // Create a PhoneAuthCredential with the code
+//                             final credential = PhoneAuthProvider.credential(
+//                               verificationId: verificationId,
+//                               smsCode: smsCode,
+//                             );
 
-                            try {
-                              await user.multiFactor.enroll(
-                                PhoneMultiFactorGenerator.getAssertion(
-                                  credential,
-                                ),
-                              );
-                            } on FirebaseAuthException catch (e) {
-                              print(e.message);
-                            } catch (e) {
-                              print("Error: $e");
-                            }
-                          }
-                        },
-                        codeAutoRetrievalTimeout: (_) {},
-                      );
-                    }
-                  }
-                },
-              ),
-              if (error != null)
-                Text(
-                  "Error: $error",
-                  style: TextStyle(color: Colors.red[800], fontSize: 12),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+//                             print(credential);
 
-  Future<String?> getSmsCodeFromUser(BuildContext context) async {
-    String? smsCode;
+//                             try {
+//                               await user.multiFactor.enroll(
+//                                 PhoneMultiFactorGenerator.getAssertion(
+//                                   credential,
+//                                 ),
+//                               );
+//                             } on FirebaseAuthException catch (e) {
+//                               print(e.message);
+//                             } catch (e) {
+//                               print("Error: $e");
+//                             }
+//                           }
+//                         },
+//                         codeAutoRetrievalTimeout: (_) {},
+//                       );
+//                     }
+//                   }
+//                 },
+//               ),
+//               if (error != null)
+//                 Text(
+//                   "Error: $error",
+//                   style: TextStyle(color: Colors.red[800], fontSize: 12),
+//                 ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
 
-    // Update the UI - wait for the user to enter the SMS code
-    await showDialog<String>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('SMS code:'),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Sign in'),
-            ),
-            OutlinedButton(
-              onPressed: () {
-                smsCode = null;
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-          ],
-          content: Container(
-            padding: const EdgeInsets.all(20),
-            child: TextField(
-              onChanged: (value) {
-                smsCode = value;
-              },
-              textAlign: TextAlign.center,
-              autofocus: true,
-            ),
-          ),
-        );
-      },
-    );
+//   Future<String?> getSmsCodeFromUser(BuildContext context) async {
+//     String? smsCode;
 
-    return smsCode;
-  }
-}
+//     // Update the UI - wait for the user to enter the SMS code
+//     await showDialog<String>(
+//       context: context,
+//       barrierDismissible: false,
+//       builder: (context) {
+//         return AlertDialog(
+//           title: const Text('SMS code:'),
+//           actions: [
+//             ElevatedButton(
+//               onPressed: () {
+//                 Navigator.of(context).pop();
+//               },
+//               child: const Text('Sign in'),
+//             ),
+//             OutlinedButton(
+//               onPressed: () {
+//                 smsCode = null;
+//                 Navigator.of(context).pop();
+//               },
+//               child: const Text('Cancel'),
+//             ),
+//           ],
+//           content: Container(
+//             padding: const EdgeInsets.all(20),
+//             child: TextField(
+//               onChanged: (value) {
+//                 smsCode = value;
+//               },
+//               textAlign: TextAlign.center,
+//               autofocus: true,
+//             ),
+//           ),
+//         );
+//       },
+//     );
+
+//     return smsCode;
+//   }
+// }
