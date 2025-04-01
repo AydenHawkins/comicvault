@@ -64,6 +64,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter some text';
+                  } else if (!isValidEmail(value)) {
+                    return 'Please enter a valid email';
                   }
                   return null; // Returning null means "no issues"
                 },
@@ -140,6 +142,13 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {});
     }
   }
+
+  bool isValidEmail(String email) {
+    final emailRegex = RegExp(
+      r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+    return emailRegex.hasMatch(email);
+  }
 }
 
 class SignUpScreen extends StatefulWidget {
@@ -213,6 +222,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   if (_formKey.currentState!.validate()) {
                     trySignUp();
                   }
+                },
+              ),
+              ElevatedButton(
+                child: const Text('Go Back'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
                 },
               ),
               if (error != null)
