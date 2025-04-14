@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:comicvault/services/api_service.dart';
-import 'package:comicvault/models/comic_issue.dart';
 import 'package:comicvault/custom_widgets/comic_card.dart';
 
 class UserCollectionScreen extends StatefulWidget {
@@ -16,8 +14,8 @@ class SearchScreenState extends State<UserCollectionScreen> {
   final TextEditingController _issueController = TextEditingController();
 
   // These will be used once the screen is able to query the user's collection from the firestore
-  bool _isLoading = false;
-  String _errorMessage = '';
+  final bool _isLoading = false;
+  final String _errorMessage = '';
   final List<dynamic> _searchResults = [];
 
   @override

@@ -5,7 +5,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  runApp(const MaterialApp(title: "Testing", home: StartScreen()));
+  runApp(
+    MaterialApp(
+      title: "Testing",
+      home: StartScreen(),
+      theme: ThemeData.dark(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
 
