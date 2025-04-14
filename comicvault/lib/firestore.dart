@@ -1,10 +1,11 @@
 //needs to be tested before it's used, might not work (probably doesn't work)
 class Firestore {
-  final String collectionName = "users";
-  final String fileName = "user";
+  final String userCollection = "users";
+  final String comicCollection = "comics";
 
-  static add_comic(
+  void add_comic(
     String user,
+    int id,
     String title,
     String publisher,
     int issue,
@@ -17,14 +18,29 @@ class Firestore {
     final comic = {
       "Title": title,
       "Publiser": publisher,
-      "issueNumber": issue,
+      "issueNum": issue,
       "releaseDate": release,
     };
 
     db
-        .collection(collectionName)
-        .doc(fileName)
+        .collection(userCollection)
+        .doc(user)
+        .collection(comicCollection)
+        .doc(id)
         .set(comic, SetOptions(merge: true))
         .onError((e, _) => print("Error writing document: $e"));
+  }
+
+  //takes a given comic to be removed from a specific user's file
+  void remove_comic(String user, int id) {
+    db = FirebaseFirestore.instance;
+
+    final document = db
+        .collection(userCollection)
+        .doc(user)
+        .collection(comicCollection)
+        .doc(id)
+        .delete()
+        .then(onError: (e) => print("Error deleting comic: $e"));
   }
 }
