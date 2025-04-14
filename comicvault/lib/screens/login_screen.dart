@@ -1,7 +1,8 @@
 import 'dart:async';
 
-import 'package:comicvault/screens/search_screen_v2.dart';
+import 'package:comicvault/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import '../firebase_options.dart';
@@ -29,7 +30,7 @@ class _StartScreenState extends State<StartScreen> {
     if (!firebaseReady) return const Center(child: CircularProgressIndicator());
 
     User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) return const SearchScreenv2();
+    if (user != null) return const HomeScreen();
     return const LoginScreen();
   }
 }
@@ -127,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pop();
       Navigator.of(
         context,
-      ).push(MaterialPageRoute(builder: (context) => const SearchScreenv2()));
+      ).push(MaterialPageRoute(builder: (context) => const HomeScreen()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         error = 'No user found for that email.';
@@ -274,6 +275,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             'A verification email has been sent to $email. Please verify your email to continue.';
       });
       await isEmailVerified();
+      await createUserDocIfNotExists();
 
       if (!mounted) return;
     } on FirebaseAuthException catch (e) {
@@ -322,13 +324,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
           Future.delayed(Duration(seconds: 2), () {
             if (!mounted) return;
             Navigator.of(context).pop();
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const SearchScreenv2()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => const HomeScreen()));
           });
         }
       }
     });
+  }
+
+  Future<void> createUserDocIfNotExists() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final userRef = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(user.uid);
+    final doc = await userRef.get();
+
+    if (!doc.exists) {
+      await userRef.set({});
+    }
   }
 }
 
