@@ -25,6 +25,22 @@ class ComicIssue {
     required this.modified,
   });
 
+  Map<String, Object?> toMap() {
+    return {
+      'id': id,
+      'seriesName': seriesName,
+      'seriesVolume': seriesVolume,
+      'seriesYearBegan': seriesYearBegan,
+      'issueNumber': issueNumber,
+      'issueTitle': issueTitle,
+      'coverDate': coverDate,
+      'storeDate': storeDate,
+      'imageURL': imageUrl,
+      'coverHash': coverHash,
+      'modified': modified,
+    };
+  }
+
   factory ComicIssue.fromMap(Map<String, dynamic> map) {
     return ComicIssue(
       id: map['id'],
