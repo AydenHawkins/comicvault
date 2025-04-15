@@ -317,6 +317,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         await user.reload();
         if (user.emailVerified) {
           timer.cancel();
+          if (!mounted) return;
           setState(() {
             isLoading = false;
             loadingMessage = 'Email verified! Redirecting...';
