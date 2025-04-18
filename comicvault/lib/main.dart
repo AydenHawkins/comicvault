@@ -1,3 +1,5 @@
+import 'package:comicvault/collection_screen.dart';
+import 'package:comicvault/home_screen.dart';
 import 'package:comicvault/screens/login_screen.dart';
 //import 'package:comicvault/search_screen.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +10,7 @@ void main() async {
   runApp(
     MaterialApp(
       title: "Testing",
-      home: StartScreen(),
+      home: HomeScreen(),
       theme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
     ),

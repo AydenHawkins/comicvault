@@ -1,0 +1,4 @@
+enum SortOption {
+  alphabetical,
+  releaseDate,
+}
