@@ -153,9 +153,16 @@ class _CollectionScreenState extends State<CollectionScreen> {
     );
   }
 
-  Widget _buildIssueCard(ComicIssue issue, var comicDocs, int index) {
+  Widget _buildIssueCard(
+    ComicIssue issue,
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> comicDocs,
+    int index,
+  ) {
     return GestureDetector(
-      onTap: () => deleteComic(comicDocs, index),
+      onTap: () {
+        showCardDetails(context, issue, comicDocs, index);
+      },
+      //() => deleteComic(comicDocs, index),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
@@ -192,10 +199,27 @@ class _CollectionScreenState extends State<CollectionScreen> {
     );
   }
 
-  void deleteComic(var comicDocs, int index) async {
+  void deleteComic(
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> comicDocs,
+    ComicIssue issue,
+  ) async {
     try {
-      QueryDocumentSnapshot comic = comicDocs[index];
-      await comicsRef.doc(comic.id).delete();
+      final docToDelete = comicDocs.firstWhere(
+        (doc) => doc['id'] == issue.id,
+        //orElse: () => null,
+      );
+
+      if (docToDelete == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Comic not found.")));
+        return;
+      }
+
+      await comicsRef.doc(docToDelete.id).delete();
+
+      // QueryDocumentSnapshot comic = comicDocs[index];
+      // await comicsRef.doc(comic.id).delete();
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
@@ -206,5 +230,61 @@ class _CollectionScreenState extends State<CollectionScreen> {
         context,
       ).showSnackBar(const SnackBar(content: Text("Something went wrong!")));
     }
+  }
+
+  void showCardDetails(
+    BuildContext context,
+    ComicIssue cardData,
+    var comicDocs,
+    int index,
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  cardData.issueTitle,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: Icon(Icons.close),
+              ),
+            ],
+          ), // Assume your model has a title
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Issue Number : ${cardData.issueNumber}'),
+                Text('Series Name: ${cardData.seriesName}'),
+                Text('Series Volume: ${cardData.seriesVolume}'),
+                Text('Series Started: ${cardData.seriesYearBegan}'),
+                Text('Cover Date: ${cardData.coverDate}'),
+                // Add more attributes as needed
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: TextButton(
+                child: const Text('Remove from Collection'),
+                onPressed: () {
+                  deleteComic(comicDocs, cardData);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

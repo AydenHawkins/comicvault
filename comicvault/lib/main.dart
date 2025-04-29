@@ -10,7 +10,7 @@ void main() async {
   runApp(
     MaterialApp(
       title: "Testing",
-      home: HomeScreen(),
+      home: StartScreen(),
       theme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
     ),
