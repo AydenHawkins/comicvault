@@ -18,7 +18,7 @@ class SeriesDetailScreen extends StatelessWidget {
           crossAxisSpacing: 8.0,
           mainAxisSpacing: 8.0,
           childAspectRatio: 0.65,
-          mainAxisExtent: 345,
+          mainAxisExtent: 320,
         ),
         itemCount: series.issues.length,
         itemBuilder: (context, index) {
@@ -43,7 +43,7 @@ class SeriesDetailScreen extends StatelessWidget {
             child: Image.network(issue.imageUrl, fit: BoxFit.contain),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(0.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

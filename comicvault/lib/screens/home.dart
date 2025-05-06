@@ -7,17 +7,38 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ElevatedButton(
-        onPressed: () {
-          FirebaseAuth.instance.signOut();
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => LoginScreen()),
-            (route) => false,
-          );
-        },
-        child: Text("Temp Logout for Testing"),
-      ),
+    return Column(
+      children: [
+        Spacer(),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                  (route) => false,
+                );
+              },
+              icon: Icon(Icons.logout),
+            ),
+          ),
+        ),
+        Spacer(flex: 8),
+        Expanded(
+          child: Center(
+            child: Center(
+              child: Text(
+                "Welcome to your Comic Vault!",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          ),
+        ),
+        Spacer(flex: 10),
+      ],
     );
   }
 }

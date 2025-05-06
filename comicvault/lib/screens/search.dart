@@ -24,6 +24,8 @@ class SearchScreenState extends State<SearchScreen> {
   String? coverYear, issueNumber, seriesYearBegan, yearBegan, yearEnd;
 
   List<dynamic> _searchResults = [];
+  bool _tooManyComics = false;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +45,7 @@ class SearchScreenState extends State<SearchScreen> {
                 selected: <String>{_searchType},
                 onSelectionChanged: (Set<String> newSelection) {
                   setState(() {
+                    _tooManyComics = false;
                     _searchType = newSelection.first;
                     _searchController.clear();
                     _searchQuery = '';
@@ -83,6 +86,9 @@ class SearchScreenState extends State<SearchScreen> {
                 ),
               ],
             ),
+            if (isLoading)
+              Expanded(child: Center(child: CircularProgressIndicator())),
+
             Expanded(
               child:
                   _searchType == 'Series'
@@ -148,6 +154,9 @@ class SearchScreenState extends State<SearchScreen> {
 
   // Perform the search based on the selected category and filters
   void _performSearch() async {
+    setState(() {
+      isLoading = true;
+    });
     List<dynamic> results = [];
 
     try {
@@ -158,10 +167,17 @@ class SearchScreenState extends State<SearchScreen> {
           yearEnd: yearEnd,
         );
 
+        print("Searching for series: ${results}");
+        int count = 0;
         for (var series in results) {
+          if (count == 10) {
+            _tooManyComics = true;
+            break;
+          }
           if (series is ComicSeries) {
             await _apiService.updateComicSeriesWithIssues(series);
           }
+          count++;
         }
       } else {
         results = await _apiService.searchIssues(
@@ -178,6 +194,9 @@ class SearchScreenState extends State<SearchScreen> {
     } catch (e) {
       print('Error: $e');
     } finally {
+      setState(() {
+        isLoading = false;
+      });
       _clearFilters();
     }
   }
@@ -193,8 +212,9 @@ class SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildSeriesResults() {
+    print("Trying to build the following series: ${_searchResults}");
     return ListView.builder(
-      itemCount: _searchResults.length,
+      itemCount: _tooManyComics ? 10 : _searchResults.length,
       itemBuilder: (context, index) {
         final series = _searchResults[index] as ComicSeries;
         return _buildSeriesRow(series);
@@ -243,7 +263,9 @@ class SearchScreenState extends State<SearchScreen> {
               return Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    showCardDetails(context, issue);
+                  },
                   child: SizedBox(
                     width: 100,
                     child: Column(
